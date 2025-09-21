@@ -1,6 +1,5 @@
 from typing import Final
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from sqlalchemy.orm import DeclarativeBase
 
 DATABASE_URL: Final[str] = "sqlite+aiosqlite:///./test.db"
 
@@ -10,5 +9,3 @@ async_session = async_sessionmaker(
 )
 
 
-class Base(DeclarativeBase):
-    pass

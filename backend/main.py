@@ -1,11 +1,15 @@
 import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends
 from fastapi.responses import JSONResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
-from database import engine, Base, async_session
+from db.database import engine
+from db.base import Base
+from dependencies import get_uow
 from uow import UnitOfWork
 import schemas, services, exceptions
+from auth.routes import router as auth_router
+
 
 # logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -16,6 +20,7 @@ async def lifespan(app: FastAPI):
     logger.info("Starting app — creating DB schema if needed")
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        print(Base.metadata)
     try:
         yield
     finally:
@@ -32,6 +37,7 @@ app.add_middleware(
     allow_headers=["*"],      # все заголовки
 )
 
+app.include_router(auth_router, prefix="/auth", tags=["auth"])
 
 # custom exception handlers
 @app.exception_handler(exceptions.NotFoundError)
@@ -46,11 +52,6 @@ async def conflict_handler(request, exc: exceptions.AlreadyExistsError):
 async def business_handler(request, exc: exceptions.BusinessError):
     return JSONResponse({"detail": str(exc)}, status_code=400)
 
-
-# dependency: UoW per request
-async def get_uow():
-    async with UnitOfWork(async_session) as uow:
-        yield uow
 
 
 @app.post("/students/", response_model=schemas.StudentNew, status_code=201)
