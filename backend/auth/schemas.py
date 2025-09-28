@@ -8,7 +8,7 @@ class UserCreate(BaseModel):
 class UserRead(BaseModel):
     id: int
     username: str
-    is_active: bool
+    is_active: bool =True
     model_config = ConfigDict(from_attributes=True)
 
 class Token(BaseModel):

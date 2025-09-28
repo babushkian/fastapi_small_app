@@ -2,7 +2,7 @@ from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
-from models import Student, Course
+from student_course.models import Student, Course
 
 class StudentRepository:
     def __init__(self, session: AsyncSession):

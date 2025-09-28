@@ -9,7 +9,7 @@ wheels/
 # Virtual environments
 backend/.venv
 backend/.idea
-
+backend/test.db
 
 
 

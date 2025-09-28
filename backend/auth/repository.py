@@ -1,6 +1,6 @@
 from sqlalchemy import select
 from typing import Optional
-from models import User
+from auth.models import User
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -17,10 +17,17 @@ class UserRepository:
         res = await self.session.execute(stmt)
         return res.scalars().first()
 
+
     async def add(self, user: User) -> User:
         self.session.add(user)
         await self.session.flush()
         return user
+
+
+    async def list(self) -> list[User]:
+        stmt = select(User)
+        result = await self.session.execute(stmt)
+        return  result.scalars().all()
 
     async def increment_token_version(self, user: User) -> None:
         user.token_version += 1

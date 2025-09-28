@@ -1,6 +1,6 @@
 import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, status
 from fastapi.responses import JSONResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
 from db.database import engine
@@ -42,19 +42,19 @@ app.include_router(auth_router, prefix="/auth", tags=["auth"])
 # custom exception handlers
 @app.exception_handler(exceptions.NotFoundError)
 async def not_found_handler(request, exc: exceptions.NotFoundError):
-    return JSONResponse({"detail": str(exc)}, status_code=404)
+    return JSONResponse({"detail": str(exc)}, status_code=status.HTTP_404_NOT_FOUND)
 
 @app.exception_handler(exceptions.AlreadyExistsError)
 async def conflict_handler(request, exc: exceptions.AlreadyExistsError):
-    return JSONResponse({"detail": str(exc)}, status_code=400)
+    return JSONResponse({"detail": str(exc)}, status_code=status.HTTP_400_BAD_REQUEST)
 
 @app.exception_handler(exceptions.BusinessError)
 async def business_handler(request, exc: exceptions.BusinessError):
-    return JSONResponse({"detail": str(exc)}, status_code=400)
+    return JSONResponse({"detail": str(exc)}, status_code=status.HTTP_400_BAD_REQUEST)
 
 
 
-@app.post("/students/", response_model=schemas.StudentNew, status_code=201)
+@app.post("/students/", response_model=schemas.StudentNew, status_code=status.HTTP_201_CREATED)
 async def create_student(student_in: schemas.StudentCreate, uow: UnitOfWork = Depends(get_uow)):
     svc = services.StudentService(uow)
     student = await svc.create_student(student_in)
@@ -68,15 +68,15 @@ async def list_students(uow: UnitOfWork = Depends(get_uow)):
     return await svc.list_students()
 
 
-@app.delete("/students/{student_id}", status_code=204)
+@app.delete("/students/{student_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_student(student_id: int, uow: UnitOfWork = Depends(get_uow)):
     svc = services.StudentService(uow)
     await svc.delete_student(student_id)
     logger.info("Deleted student id=%s", student_id)
-    return Response(status_code=204)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@app.post("/courses/", response_model=schemas.Course, status_code=201)
+@app.post("/courses/", response_model=schemas.Course, status_code=status.HTTP_201_CREATED)
 async def create_course(course_in: schemas.CourseCreate, uow: UnitOfWork = Depends(get_uow)):
     svc = services.CourseService(uow)
     course = await svc.create_course(course_in)
@@ -90,7 +90,7 @@ async def list_courses(uow: UnitOfWork = Depends(get_uow)):
     return await svc.list_courses()
 
 
-@app.delete("/courses/{course_id}", status_code=204)
+@app.delete("/courses/{course_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_course(course_id: int, uow: UnitOfWork = Depends(get_uow)):
     svc = services.CourseService(uow)
     await svc.delete_course(course_id)
