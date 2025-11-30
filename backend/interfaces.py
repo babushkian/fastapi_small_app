@@ -1,5 +1,5 @@
 from typing import Protocol, Optional, List
-from models import Student, Course
+from student_course.models import Student, Course
 
 class StudentRepositoryInterface(Protocol):
     async def get(self, id: int) -> Optional[Student]: ...
