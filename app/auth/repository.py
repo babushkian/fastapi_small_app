@@ -1,6 +1,6 @@
 from sqlalchemy import select
 from typing import Optional
-from auth.models import User
+from app.auth.models import User
 from sqlalchemy.ext.asyncio import AsyncSession
 
 

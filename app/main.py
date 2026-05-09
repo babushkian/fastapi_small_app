@@ -3,13 +3,17 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, status
 from fastapi.responses import JSONResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
-from db.database import engine
-from db.base import Base
-from dependencies import get_uow
-from uow import UnitOfWork
-import schemas, services, exceptions
-from auth.routes import router as auth_router
+from app.db.database import engine
+from app.db.base import Base
+from app.dependencies import get_uow
+from app.uow import UnitOfWork
+from app import schemas
+from app import services
+from app import exceptions
+from app.auth.routes import router as auth_router
+from app.settings import settings
 
+print(settings)
 
 # logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")

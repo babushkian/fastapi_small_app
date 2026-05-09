@@ -1,7 +1,7 @@
 from typing import Optional
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
-from repositories import StudentRepository, CourseRepository
-from auth.repository import UserRepository
+from app.repositories import StudentRepository, CourseRepository
+from app.auth.repository import UserRepository
 
 class UnitOfWork:
     def __init__(self, session_factory: async_sessionmaker):

@@ -1,8 +1,8 @@
 from fastapi import Query, Depends, APIRouter, status
-from dependencies import get_uow
-from uow import UnitOfWork
-from auth.schemas import UserCreate, UserRead
-from auth.services import UserService
+from app.dependencies import get_uow
+from app.uow import UnitOfWork
+from app.auth.schemas import UserCreate, UserRead
+from app.auth.services import UserService
 router = APIRouter()
 
 @router.get("/current_user")

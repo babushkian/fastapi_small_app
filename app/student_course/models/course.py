@@ -1,7 +1,7 @@
 from sqlalchemy import Integer, String, Column, ForeignKey, Table
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from db import Base
+from app.db import Base
 # from models import Student
 
 

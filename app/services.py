@@ -1,10 +1,10 @@
 from typing import List
-import schemas
-from student_course import models
+from app import schemas
+from app.student_course import models
 
 
-from uow import UnitOfWork
-from exceptions import NotFoundError, AlreadyExistsError
+from app.uow import UnitOfWork
+from app.exceptions import NotFoundError, AlreadyExistsError
 
 class StudentService:
     def __init__(self, uow: UnitOfWork):

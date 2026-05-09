@@ -1,9 +1,9 @@
 
 
-from uow import UnitOfWork
-from exceptions import NotFoundError, AlreadyExistsError
-from auth import models
-from auth.schemas import UserCreate, UserRead
+from app.uow import UnitOfWork
+from app.exceptions import NotFoundError, AlreadyExistsError
+from app.auth import models
+from app.auth.schemas import UserCreate, UserRead
 class UserService:
     def __init__(self, uow: UnitOfWork):
         self.uow = uow
