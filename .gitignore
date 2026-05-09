@@ -37,4 +37,5 @@ frontend/.vscode/*
 *.njsproj
 *.sln
 *.sw?
-
+*.sqlite3
+.env

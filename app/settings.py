@@ -1,10 +1,18 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pathlib import Path
-BASE_DIR = Path(__file__).resolve().parents[1]
-print(f"{BASE_DIR=}")
+from pydantic import computed_field
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env")
-    DATABASE_PATH: str = str(BASE_DIR / "db.sqlite3")
+    DATABASE_NAME: str
+    BASE_DIR: Path = Path(__file__).resolve().parents[1]
+
+
+
+    @computed_field
+    @property
+    def database_url(self) -> str:
+        return   f"sqlite+aiosqlite:///{str(self.BASE_DIR / self.DATABASE_NAME)}"
 
 settings = Settings()
