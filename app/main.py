@@ -1,8 +1,14 @@
 import logging
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Depends, status
+from fastapi import FastAPI, Depends, status, Request
 from fastapi.responses import JSONResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from starlette.responses import HTMLResponse
+from starlette.templating import Jinja2Templates
+from  starlette.responses import HTMLResponse
+from pathlib import Path
+
 from app.db.database import engine
 from app.db.base import Base
 
@@ -28,6 +34,9 @@ async def lifespan(app: FastAPI):
         await engine.dispose()
 
 app = FastAPI(title="Async FastAPI + SQLAlchemy (UoW/Repo/Service)", lifespan=lifespan)
+templates = Jinja2Templates(directory="app/templates")
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -36,10 +45,17 @@ app.add_middleware(
     allow_methods=["*"],      # все методы (GET, POST и т.д.)
     allow_headers=["*"],      # все заголовки
 )
-
+from app.routes import  pages_router
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(student_router, prefix="/students", tags=["students"])
 app.include_router(course_router, prefix="/courses", tags=["courses"])
+
+app.include_router(pages_router)
+
+# @app.get("/abba", response_class=HTMLResponse)
+# async def index(request: Request):
+#     return templates.TemplateResponse(request, "base.html", context= {"title":"Home"})
+#
 
 # custom exception handlers
 @app.exception_handler(exceptions.NotFoundError)
