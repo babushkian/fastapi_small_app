@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Request
 from starlette.responses import HTMLResponse
-from app.main import templates
+from app.fastapi_instance import templates
+
 router = APIRouter()
 
 @router.get("/abba", response_class=HTMLResponse)
