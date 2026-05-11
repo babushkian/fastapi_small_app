@@ -1,3 +1,4 @@
+from sys import prefix
 
 from fastapi import FastAPI, Depends, status, Request
 from fastapi.responses import JSONResponse, Response
@@ -8,10 +9,8 @@ from fastapi.staticfiles import StaticFiles
 
 from app import exceptions
 from app.auth.routes import router as auth_router
-from app.routes import course_router, student_router
 
-
-from app.routes import  pages_router
+from app.routes import  pages_router, api_router
 from app.fastapi_instance import app
 
 
@@ -27,8 +26,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
-app.include_router(student_router, prefix="/students", tags=["students"])
-app.include_router(course_router, prefix="/courses", tags=["courses"])
+app.include_router(api_router, prefix= "/api")
 app.include_router(pages_router)
 
 
