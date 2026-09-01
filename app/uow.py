@@ -4,7 +4,7 @@ from app.repositories import StudentRepository, CourseRepository
 from app.auth.repository import UserRepository
 
 class UnitOfWork:
-    def __init__(self, session_factory: async_sessionmaker):
+    def __init__(self, session_factory: async_sessionmaker[AsyncSession]):
         self._session_factory = session_factory
         self.session: Optional[AsyncSession] = None
         self.students: Optional[StudentRepository] = None
