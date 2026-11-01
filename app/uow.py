@@ -1,13 +1,20 @@
-from typing import Optional
-
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.auth.repository import UserRepository
-from app.interfaces import CourseRepositoryInterface, StudentRepositoryInterface
+from app.interfaces import (
+    CourseRepositoryInterface,
+    StudentRepositoryInterface,
+    UserRepositoryInterface,
+)
 from app.repositories import CourseRepository, StudentRepository
 
 
 class SQLUnitOfWork:
+    students: StudentRepositoryInterface
+    courses: CourseRepositoryInterface
+    users: UserRepositoryInterface
+    session: AsyncSession
+
     def __init__(self, session_factory: async_sessionmaker[AsyncSession]):
         self._session_factory = session_factory
 
@@ -33,4 +40,3 @@ class SQLUnitOfWork:
     async def rollback(self):
         if self.session is not None:
             await self.session.rollback()
-    

@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse, Response
 
 from app import schemas, services
 from app.dependencies import get_uow
-from app.interfaces import UnitOfWork
+from app.uow import SQLUnitOfWork
 
 router = APIRouter()
 
@@ -17,14 +17,14 @@ logger = logging.getLogger("app")
 
 
 @router.get("/", response_model=list[schemas.Course])
-async def list_courses(uow: Annotated[UnitOfWork, Depends(get_uow)]):
+async def list_courses(uow: Annotated[SQLUnitOfWork, Depends(get_uow)]):
     svc = services.CourseService(uow)
     return await svc.list_courses()
 
 
 @router.post("/", response_model=schemas.Course, status_code=status.HTTP_201_CREATED)
 async def create_course(
-    course_in: schemas.CourseCreate, uow: Annotated[UnitOfWork, Depends(get_uow)]
+    course_in: schemas.CourseCreate, uow: Annotated[SQLUnitOfWork, Depends(get_uow)]
 ):
     svc = services.CourseService(uow)
     course = await svc.create_course(course_in)
@@ -33,7 +33,7 @@ async def create_course(
 
 
 @router.delete("/{course_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_course(course_id: int, uow: Annotated[UnitOfWork, Depends(get_uow)]):
+async def delete_course(course_id: int, uow: Annotated[SQLUnitOfWork, Depends(get_uow)]):
     svc = services.CourseService(uow)
     await svc.delete_course(course_id)
     logger.info("Deleted course id=%s", course_id)
