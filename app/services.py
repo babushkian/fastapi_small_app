@@ -1,16 +1,18 @@
 from typing import List
+
 from app import schemas
+from app.exceptions import AlreadyExistsError, NotFoundError
+from app.interfaces import UnitOfWork
 from app.student_course import models
 
-
-from app.uow import UnitOfWork
-from app.exceptions import NotFoundError, AlreadyExistsError
 
 class StudentService:
     def __init__(self, uow: UnitOfWork):
         self.uow = uow
 
-    async def create_student(self, dto: schemas.StudentCreate) -> models.student.Student:
+    async def create_student(
+        self, dto: schemas.StudentCreate
+    ) -> models.student.Student:
         existing = await self.uow.students.get_by_name(dto.name)
         if existing:
             raise AlreadyExistsError("student already exists")
@@ -20,7 +22,7 @@ class StudentService:
         await self.uow.students.add(student)
         return student
 
-    async def list_students(self) -> List[models.student.Student]:
+    async def list_students(self) -> list[models.student.Student]:
         return await self.uow.students.list()
 
     async def enroll(self, student_id: int, course_id: int) -> models.student.Student:

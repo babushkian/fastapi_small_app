@@ -1,33 +1,32 @@
+from collections.abc import Sequence
+
 from sqlalchemy import select
-from typing import Optional
-from app.auth.models import User
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.auth.models import User
 
 
 class UserRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get(self, id: int) -> Optional[User]:
+    async def get(self, id: int) -> User | None:
         return await self.session.get(User, id)
 
-    async def get_by_username(self, username: str) -> Optional[User]:
+    async def get_by_username(self, username: str) -> User | None:
         stmt = select(User).filter_by(username=username)
         res = await self.session.execute(stmt)
         return res.scalars().first()
-
 
     async def add(self, user: User) -> User:
         self.session.add(user)
         await self.session.flush()
         return user
 
-
-    async def list(self) -> list[User]:
+    async def list(self) -> Sequence[User]:
         stmt = select(User)
         result = await self.session.execute(stmt)
-        return  result.scalars().all()
+        return result.scalars().all()
 
     async def increment_token_version(self, user: User) -> None:
         user.token_version += 1
