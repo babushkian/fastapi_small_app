@@ -1,5 +1,4 @@
-from typing import List
-
+from collections.abc import Sequence
 from app import schemas
 from app.exceptions import AlreadyExistsError, NotFoundError
 from app.interfaces import UnitOfWork
@@ -20,12 +19,13 @@ class StudentService:
         student = models.student.Student(name=dto.name)
         print("объект студента", student)
         await self.uow.students.add(student)
+        await self.uow.commit()
         return student
 
     async def list_students(self) -> list[models.student.Student]:
         return await self.uow.students.list()
 
-    async def enroll(self, student_id: int, course_id: int) -> models.student.Student:
+    async def enroll(self, student_id: int, course_id: int) -> models.student.Student | None:
         student = await self.uow.students.get_with_courses(student_id)
         course = await self.uow.courses.get(course_id)
         if not student or not course:
@@ -33,9 +33,10 @@ class StudentService:
         if course not in student.courses:
             student.courses.append(course)
             await self.uow.session.flush()
+        await self.uow.commit()
         return await self.uow.students.get_with_courses(student_id)
 
-    async def unenroll(self, student_id: int, course_id: int) -> models.student.Student:
+    async def unenroll(self, student_id: int, course_id: int) -> models.student.Student | None:
         student = await self.uow.students.get_with_courses(student_id)
         if not student:
             raise NotFoundError("student not found")
@@ -44,7 +45,7 @@ class StudentService:
         if not course:
             raise NotFoundError("enrollment not found")
         student.courses.remove(course)
-        await self.uow.session.flush()
+        await self.uow.commit()
         return await self.uow.students.get_with_courses(student_id)
 
     async def delete_student(self, student_id: int) -> None:
@@ -52,6 +53,7 @@ class StudentService:
         if not student:
             raise NotFoundError("student not found")
         await self.uow.students.remove(student)
+        await self.uow.commit()
 
 
 class CourseService:
@@ -64,9 +66,10 @@ class CourseService:
             raise AlreadyExistsError("course already exists")
         course = models.course.Course(title=dto.title)
         await self.uow.courses.add(course)
+        await self.uow.commit()
         return course
 
-    async def list_courses(self) -> List[models.course.Course]:
+    async def list_courses(self) -> list[models.course.Course]:
         return await self.uow.courses.list()
 
     async def delete_course(self, course_id: int) -> None:
@@ -74,3 +77,4 @@ class CourseService:
         if not course:
             raise NotFoundError("course not found")
         await self.uow.courses.remove(course)
+        await self.uow.commit()

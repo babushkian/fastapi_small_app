@@ -1,28 +1,31 @@
-from typing import List, Optional
-from sqlalchemy.ext.asyncio import AsyncSession
+from collections.abc import Sequence
+
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-from app.student_course.models import Student, Course
+
+from app.student_course.models import Course, Student
+
 
 class StudentRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get(self, id: int) -> Optional[Student]:
+    async def get(self, id: int) -> Student | None:
         return await self.session.get(Student, id)
 
-    async def get_with_courses(self, id: int) -> Optional[Student]:
+    async def get_with_courses(self, id: int) -> Student | None:
         stmt = select(Student).options(selectinload(Student.courses)).filter_by(id=id)
         res = await self.session.execute(stmt)
         return res.scalars().first()
 
-    async def get_by_name(self, name: str) -> Optional[Student]:
+    async def get_by_name(self, name: str) -> Student | None:
         print("Поиск студента по имени")
         stmt = select(Student).filter_by(name=name).options(selectinload(Student.courses))
         res = await self.session.execute(stmt)
         return res.scalars().first()
 
-    async def list(self) -> List[Student]:
+    async def list(self) -> Sequence[Student]:
         stmt = select(Student).options(selectinload(Student.courses))
         res = await self.session.execute(stmt)
         return res.scalars().unique().all()
@@ -42,20 +45,20 @@ class CourseRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get(self, id: int) -> Optional[Course]:
+    async def get(self, id: int) -> Course | None:
         return await self.session.get(Course, id)
 
-    async def get_with_students(self, id: int) -> Optional[Course]:
+    async def get_with_students(self, id: int) -> Course | None:
         stmt = select(Course).options(selectinload(Course.students)).filter_by(id=id)
         res = await self.session.execute(stmt)
         return res.scalars().first()
 
-    async def get_by_title(self, title: str) -> Optional[Course]:
+    async def get_by_title(self, title: str) -> Course | None:
         stmt = select(Course).filter_by(title=title)
         res = await self.session.execute(stmt)
         return res.scalars().first()
 
-    async def list(self) -> List[Course]:
+    async def list(self) -> Sequence[Course]:
         stmt = select(Course).options(selectinload(Course.students))
         res = await self.session.execute(stmt)
         return res.scalars().unique().all()

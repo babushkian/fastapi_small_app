@@ -18,7 +18,6 @@ async def get_current_user(uow: Annotated[UnitOfWork, Depends(get_uow)]):
 async def create_user(user: UserCreate, uow: Annotated[UnitOfWork, Depends(get_uow)]):
     svc = UserService(uow)
     result_user = await svc.create_user(user)
-    await uow.commit()
     return result_user
 
 

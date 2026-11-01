@@ -1,8 +1,8 @@
 from collections.abc import AsyncGenerator
 
 from app.db.database import async_session
-from app.uow import SQLUnitOfWork
 from app.interfaces import UnitOfWork
+from app.uow import SQLUnitOfWork
 
 
 async def get_uow() -> AsyncGenerator[UnitOfWork]:

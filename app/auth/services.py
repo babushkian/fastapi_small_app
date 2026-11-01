@@ -18,6 +18,7 @@ class UserService:
             token_version=1,
         )
         await self.uow.users.add(user)
+        await self.uow.commit()
         return user
 
     async def list(self) -> Sequence[models.User]:
