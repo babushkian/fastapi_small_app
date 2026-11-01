@@ -1,9 +1,14 @@
-from sqlalchemy import Integer, String, Column, ForeignKey, Table
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from sqlalchemy import Column, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db import Base
-# from models import Student
 
+if TYPE_CHECKING:
+    from .student import Student
 
 
 student_course = Table(
@@ -20,7 +25,7 @@ class Course(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     title: Mapped[str] = mapped_column(String, unique=True, index=True, nullable=False)
 
-    students: Mapped[list["Student"]] = relationship(
+    students: Mapped[list[Student]] = relationship(
         "Student",
         secondary=student_course,
         back_populates="courses",
